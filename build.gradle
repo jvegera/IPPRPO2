@@ -1,0 +1,55 @@
+// Плагин java добавляет задачи compileJava, test, jar, build;
+// плагин application добавляет задачу run и описывает точку входа.
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'by.student'
+version = '1.0.0-SNAPSHOT'
+
+// Артефакты берутся из Maven Central — того же репозитория, что и в Maven.
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // BOM фиксирует согласованные версии всех модулей JUnit 5.
+    testImplementation platform('org.junit:junit-bom:5.14.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    // Начиная с Gradle 9 launcher JUnit Platform нужно подключать явно.
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+// Целевая версия Java — 17 (как в Ant и Maven); собирать можно любой JDK 17+.
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
+    options.encoding = 'UTF-8'
+}
+
+application {
+    mainClass = 'by.student.hotel.Main'
+}
+
+// Тесты запускаются на JUnit Platform; результаты — в build/reports/tests/test
+// (HTML) и build/test-results/test (XML).
+test {
+    useJUnitPlatform()
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+    }
+
+    reports {
+        html.required = true
+        junitXml.required = true
+    }
+}
+
+// Манифест JAR с указанием Main-Class.
+jar {
+    manifest {
+        attributes('Main-Class': 'by.student.hotel.Main')
+    }
+}
