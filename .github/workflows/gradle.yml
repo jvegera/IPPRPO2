@@ -1,0 +1,40 @@
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Build and test
+        run: ./gradlew clean build
+
+      - name: Upload Gradle test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-test-report
+          path: build/reports/tests/test/
