@@ -17,3 +17,4 @@ public class Main {
                 calculator.calculateOccupancy(30, 40));
     }
 }
+//zc
